@@ -1,0 +1,162 @@
+* {
+	font-family: "MuseoSans-500", roboto, sans-serif;
+	box-sizing: border-box;
+	color: #333;
+}
+
+body {
+	background: #e5e5e5 url('http://www.soas.ac.uk/static/assets/body-pattern.png') repeat-y right top;
+}
+/* --- */
+.sec {
+    margin: 0 auto;
+    max-width: 1024px;
+    background: white !important;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3)
+}
+.app-header {
+	padding: 5px 26px 3px;
+	margin-top: 15px !important;
+}
+.app-header * {
+	vertical-align: middle;
+}
+/* --- */
+.year {
+	width: 33.3333%;
+	float: left;
+}
+.yrblock {
+	padding: 0 20px;
+}
+.yrblock:nth-child(1) {
+	padding-top: 10px;
+}
+.yrblock:nth-child(2) {
+    border-bottom: 1px solid #EEE;
+	padding-bottom: 20px;
+}
+.year + .year {
+    border-left: 1px solid #EEE;
+}
+.year h2 {
+	margin-top: 0;
+}
+.year-header {
+	padding-top: 20px !important;
+}
+
+.selection {
+	box-shadow: inset 0px 0px 20px rgba(0,0,0,0.1);
+	padding: 25px;
+	border-radius: 4px;
+	border-left: 6px solid green;
+	cursor: pointer;
+}
+.selection.compulsory { border-left-color: #888; }
+
+.selection + .selection {
+	margin-top: 10px;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+}
+
+.selectable {
+	font-size: 0.8em !important;
+	padding: 13px 11px !important;
+	border-left-color: #CCC !important;
+	width: 90%;
+	margin-left: 10%;
+}
+
+.selectable.chosen {
+    cursor: not-allowed;
+    opacity: 0.2;
+}
+
+/* --- */
+
+.lesson {
+	border: 1px solid #EEE;
+	padding: 20px;
+	width: 33.33333%;
+	float: left;
+	height: 6em;
+	overflow: hidden;
+	cursor: default;
+}
+
+.lesson__title {
+	font-size: 20px;
+	margin: 0;
+}
+
+.lesson__description {
+	font-size: 0.8em !important;
+	color: #EEE;
+}
+.lesson:hover .lesson__description {
+	color: #AAA;
+	transition: all 0.05s linear;
+}
+sub {
+	font-weight: bold;
+	font-family: monospace;
+	font-size: 1.2em;
+	color: #AAA;
+	display: block;
+	margin-top: 0.1em;
+}
+.prerequisites {
+    display: none;
+}
+.prerequisites.unsatisfied {
+    display: block;
+    color: red;
+}
+.selection {
+    position: relative;
+}
+
+.description {
+    font-size: 12px;
+    width: 100%;
+    max-height: 0px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    transition-property: opacity,max-height,padding;
+    transition-duration: 0.25s;
+    transition-delay: 0s;
+    left: 0;
+    position: absolute;
+    padding: 0 25px;
+    background: white !important;
+    opacity: 0;
+    box-shadow:
+        inset 0px -7px 20px rgba(0,0,0,0.1),
+        0px 4px 5px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.description li {
+	list-style-type: circle;
+}
+.selection:hover .description {
+    transition-delay: 2s;
+    max-height: 350px;
+    z-index: 999;
+    overflow-y: auto;
+    padding: 10px 25px;
+    opacity: 1;
+}
+
+.yrblock {
+    background: white;
+}
+
+main.sec,
+.selectable-options {
+    background: #FAFAFA !important;
+}

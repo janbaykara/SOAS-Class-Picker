@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>SOAS Class Options</title>
+		<link rel='stylesheet' href='style.css' />
+		<link rel="icon" href="http://www.soas.ac.uk/static/images/soas-icon-64x64.png">
+	</head>
+	<body id='app'>
+		<div id=''>
+			<header class='app-header sec'><h1><img src='http://www.soas.ac.uk/static/assets/soas-logo-100years-orig.png' alt='SOAS' /> Class Options</h1></header>
+
+			<main class='sec'>
+				<app-year
+					v-ref:all
+					v-for='year, $index in course.structure'
+					:index='$index'
+					:year='course.structure[$index]'
+					:course='course'
+					:all='all'
+				></app-year>
+				<div style='clear: both'></div>
+			</main>
+
+		</div>
+
+<!-- -->
+
+		<template id='app-year'>
+			<div class='year'>
+				<header class='year-header yrblock'>
+					<span style='float: right;'>Units: {{current_units}}/{{required_units}}</span>
+					<h2 style='float: left;'>Year {{index+1}}</h2>
+					<div style='clear: both; display: table;'></div>
+					<slot></slot>
+				</header>
+				<section class='yrblock'>
+
+					<app-class class='selected'
+						v-for='unitcode in classes'
+						v-on:click='unselect(unitcode)'
+						:unitcode='unitcode'
+						:unit='course.options[unitcode]'
+					></app-class>
+
+				</section>
+				<section class='yrblock selectable-options'>
+					<h3>Options</h3>
+					<article v-for='grp in course.structure[index].optional'>
+						<i>Choose
+						{{ !grp.min && !grp.max ? "any from..." : null }}
+						{{ grp.min ? (grp.max ? ( grp.min == grp.max ? null : "from "+grp.min) : "at least "+grp.min) : null }}
+						{{ grp.max ? (grp.min ? ( grp.min == grp.max ? null : "to ") : "up to ")+grp.max : null}}</i>
+						<div v-if='grp.options.length > 0'>
+
+							<app-class class='selectable'
+								v-for='unitcode in grp.options'
+								v-on:click='select(unitcode)'
+								:unitcode='unitcode'
+								:unit='course.options[unitcode]'
+							></app-class>
+
+						</div>
+						<span v-if='grp.external'><b>other departments</b></span>
+					</article>
+				</section>
+			</div>
+		</template>
+
+		<template id='app-class'>
+			<article class='selection'
+				v-bind:class="{ 'compulsory': $parent.isCompulsory(unitcode), 'chosen': $parent.isChosen(unitcode) }">
+				<div>{{unit.title}}</div>
+				<div>
+					<sub style='float: left;'>{{unitcode}}</sub>
+					<sub style='float: right;'>{{unit.value}} unit</sub>
+					<div style='clear: both'></div>
+				</div>
+				<sub class='prerequisites' v-bind:class="{ 'unsatisfied': !$parent.hasPrerequisites(unitcode) }">
+					Prerequisites missing: {{unit.prerequisite_string}}
+				</sub>
+				<div class='description'>{{{unit.description}}}</div>
+			</article>
+		</template>
+
+<!-- -->
+
+		<script src="jquery.min.js"></script>
+		<script src="vue.min.js"></script>
+		<script src="lodash.min.js"></script>
+		<script src="main.js"></script>
+	</body>
+</html>
