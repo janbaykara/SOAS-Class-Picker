@@ -1,16 +1,17 @@
 const cheerio = require('cheerio');
 const cachedRequest = require('./cachedRequest');
 //
-const getUnit = require("./getUnit.js");
+const getUnit = require("./getUnit");
 
 module.exports = function(coursePath, callback) {
 	var $;
 	var course = {
-		url: "https://www.soas.ac.uk/"+coursePath+"/",
+		url: "https://www.soas.ac.uk/"+coursePath,
 		title: coursePath,
 		structure: [],
 		options: {}
 	};
+	console.log(coursePath,course.url)
 
 	cachedRequest({url: course.url}, function(error, res, body) {
 		if(error) {console.log("Error: " + error);return;}

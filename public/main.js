@@ -9,7 +9,7 @@ var localData = {
 	}
 };
 
-$.get("/api/course/ba-politics-and-international-relations", function( courseSpec ) {
+$.get("/api/course?path=politics/programmes/ba-politics-and-international-relations/", function( courseSpec ) {
 
 	Vue.component('app-class', {
 		name: 'app-class',

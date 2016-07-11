@@ -2,9 +2,9 @@ const express = require('express')
 const path = require('path')
 const app = express()
 //
-const getUndergraduateProgrammes = require("./getUndergraduateProgrammes.js");
-const getCourse = require("./getCourse.js");
-const getUnit = require("./getUnit.js");
+const getUndergraduateProgrammes = require("./getUndergraduateProgrammes");
+const getCourse = require("./getCourse");
+const getUnit = require("./getUnit");
 
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
@@ -15,8 +15,8 @@ app.get('/api/ugprogrammes', (appReq, appRes) => {
 	});
 });
 
-app.get('/api/course/:courseName', (appReq, appRes) => {
-	getCourse(appReq.params.courseName, (course) => {
+app.get('/api/course', (appReq, appRes) => {
+	getCourse(appReq.query.path, (course) => {
 		appRes.json(course);
 	});
 });
