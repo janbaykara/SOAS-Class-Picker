@@ -22,12 +22,12 @@
 						</select>
 					</label>
 					<center v-if='loadingCourse'>
-						<img src='http://www.arabianbusiness.com/skins/ab.main/gfx/loading_spinner.gif' />
+						<img style='margin: 20px; width: 50px;' src='loading.gif' />
 					</center>
 				</div>
 
 				<div id='course'>
-					<center><h1>{{course.title}}</h1></center>
+					<center><h1><a href='{{course.url}}'>{{course.title}}</a></h1></center>
 					<app-year
 						v-ref:all
 						v-for='year, $index in course.structure'
