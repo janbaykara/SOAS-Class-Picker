@@ -16,10 +16,10 @@ module.exports = function(unitCode, callback) {
 		var info = $('#content dl.tabular');
 		var year    = info.find("dt:contains('Year of study') + dd").text() || null;
 			term 	= info.find("dt:contains('Taught in') + dd").text() || null;
-		unit.code   = info.find("dt:contains('Course Code') + dd").text() || unitCode || null;
-		unit.value  = info.find("dt:contains('Unit value') + dd").text() || null;
+		unit.code   = Number(info.find("dt:contains('Course Code') + dd").text()) || Number(unitCode) || null;
+		unit.credits  = Number(info.find("dt:contains('Unit value') + dd").text()) || null;
 
-		unit.year = year != null ? year.match(/year ([1-9])/ig) : null;
+		unit.year = year != null ? Number(year.match(/year ([1-9])/ig)) : null;
 
 		unit.term = term != null ? (term.indexOf("Full") > -1 ? ["Term 1", "Term 2", "Term 3"] : [term]) : null
 

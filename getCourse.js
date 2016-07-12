@@ -36,8 +36,7 @@ module.exports = function(coursePath, callback) {
 			courseYears.forEach(function(yearHTML, yearNumber) {
 				$ = cheerio.load(yearHTML);
 				var year = course.structure[yearNumber] = {
-					year: yearNumber+1,
-					// html: yearHTML,
+					year: Number(yearNumber+1),
 					option_groups: []
 				};
 
@@ -53,7 +52,7 @@ module.exports = function(coursePath, callback) {
 				if(compulsory && compulsory.length > 0) {
 					var compulsoryMods = compulsory.find('td:nth-child(2)').map(function(i, el) {
 						var code = $(this).text().trim().replace(/[\s\b ]+/g,"");
-						if(code != null && code != "") return code;
+						if(code != null && code != "") return Number(code);
 					}).get() || null;
 					compulsory.remove();
 
@@ -115,11 +114,13 @@ module.exports = function(coursePath, callback) {
 					optionGroup.options = $(this).nextUntil('h5,h6').find('td:nth-child(2)')
 						.map(function(i, el) {
 							var code = $(this).text().trim().replace(/[\s\b ]+/g,"");
-							if(code != null && code != "") return code;
+							if(code != null && code != "") return Number(code);
 						}).get();
 
 					if(optionGroup.options.length > 0) {
 						if(optionGroup.options.length == 1) optionGroup.required = true;
+						optionGroup.min = Number(optionGroup.min) || null;
+						optionGroup.max = Number(optionGroup.max) || null;
 						year.option_groups.push(optionGroup);
 					}
 				});
