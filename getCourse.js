@@ -35,29 +35,49 @@ module.exports = function(coursePath, callback) {
 			// ## For each Year, parse:
 			courseYears.forEach(function(yearHTML, yearNumber) {
 				$ = cheerio.load(yearHTML);
-
-				course.structure[yearNumber] = {
-					compulsory: [],
-					optional: []
+				var year = course.structure[yearNumber] = {
+					year: yearNumber+1,
+					// html: yearHTML,
+					option_groups: []
 				};
 
-				// #### COMPULSORY listed module IDs
-				var compulsoryCodes = $('h1 + table td:nth-child(2)')
-					.map(function(i, el) { return $(this).text().replace(" ","").trim(); }).get();
-				course.structure[yearNumber].compulsory = compulsoryCodes;
+				// Compulsory/core modules
+				var compulsory = $('\
+					h1 + table,\
+					*:contains("Core") + table,\
+					*:contains("Core") + p + table\
+					*:contains("Compulsory") + table,\
+					*:contains("Compulsory") + p + table'
+				)
+
+				if(compulsory && compulsory.length > 0) {
+					var compulsoryMods = compulsory.find('td:nth-child(2)').map(function(i, el) {
+						var code = $(this).text().trim().replace(/[\s\b ]+/g,"");
+						if(code != null && code != "") return code;
+					}).get() || null;
+					compulsory.remove();
+
+					year.option_groups.push({
+						required: true,
+						rules: $('h5:contains("Core"),\
+								  h6:contains("Core"),\
+								  h5:contains("Compulsory"),\
+								  h6:contains("Compulsory")').text() || null,
+						options: compulsoryMods
+					})
+				}
 
 				// #### OPTION RULES and module IDs
 				var optionalDelimiters = $('h5,h6');
 
 				optionalDelimiters.each(function(i,elm) {
+					// console.log($(elm).text());
 					var optionGroup = {};
-
-					///
-					var numtrans =[ ["zero",0],["one",1],["two",2],["three",3],["four",4],["five",5],["six",6],["seven",7],["eight",8],["nine",9],["ten",10]]
-					///
 
 					var optionHeadingTxt = optionGroup.rules = $(this).text();
 					optionHeadingTxt = optionHeadingTxt.toLowerCase();
+
+					var numtrans =[ ["zero",0],["one",1],["two",2],["three",3],["four",4],["five",5],["six",6],["seven",7],["eight",8],["nine",9],["ten",10]]
 					numtrans.forEach(function(el,i,arr) {
 						optionHeadingTxt = optionHeadingTxt.replace(el[0],el[1]);
 					});
@@ -87,17 +107,21 @@ module.exports = function(coursePath, callback) {
 					if (optionHeadingTxt.indexOf("another department") > -1 ||
 						optionHeadingTxt.indexOf("open option") > -1) {
 						optionGroup.external = true;
-					} else if ($(this).next().is(':not(table)')) {
+					} else if (!$(this).nextUntil('h5,h6').is('table')) {
+						// console.log("      ---has no table");
 						return;
 					}
 
-					optionGroup.options = $(this).next().find('td:nth-child(2)')
+					optionGroup.options = $(this).nextUntil('h5,h6').find('td:nth-child(2)')
 						.map(function(i, el) {
 							var code = $(this).text().trim().replace(/[\s\b ]+/g,"");
 							if(code != null && code != "") return code;
 						}).get();
 
-					course.structure[yearNumber].optional.push(optionGroup);
+					if(optionGroup.options.length > 0) {
+						if(optionGroup.options.length == 1) optionGroup.required = true;
+						year.option_groups.push(optionGroup);
+					}
 				});
 			});
 		}

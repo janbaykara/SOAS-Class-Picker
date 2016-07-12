@@ -64,7 +64,7 @@
 				</section>
 				<section class='yrblock selectable-options'>
 					<h3>Options</h3>
-					<article v-for='grp in course.structure[index].optional'>
+					<article v-for='grp in course.structure[index].option_groups' v-if='!grp.required'>
 						<h4>{{grp.rules}}</h4>
 						<div v-if='grp.options.length > 0'>
 
@@ -83,7 +83,7 @@
 
 		<template id='app-class'>
 			<article class='selection'
-				v-bind:class="{ 'compulsory': $parent.isCompulsory(unitcode), 'chosen': $parent.isChosen(unitcode) }">
+				v-bind:class="{ 'compulsory': $parent.isRequired(unitcode), 'chosen': $parent.isChosen(unitcode) }">
 				<div>{{unit.title}}</div>
 				<div>
 					<sub style='float: left;'>{{unitcode}}</sub>

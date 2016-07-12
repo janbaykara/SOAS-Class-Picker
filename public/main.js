@@ -37,7 +37,12 @@ Vue.component('app-year', {
 	},
 	computed: {
 		classes: function() {
-			return this.year.compulsory.concat(this.selections);
+			var required = [];
+			this.year.option_groups.forEach(function(group) {
+				if(group.required == true || group.type == 'core' || group.type == 'compulsory')
+					required = required.concat(group.options);
+			});
+			return this.selections.concat(required);
 		},
 		current_units: function() {
 			var self = this;
@@ -50,8 +55,13 @@ Vue.component('app-year', {
 		}
 	},
 	methods: {
-		isCompulsory: function(code) {
-			return this.year.compulsory.indexOf(code) > -1;
+		isRequired: function(code) {
+			var is_required = false;
+			this.year.option_groups.forEach(function(group) {
+				if(group.required && group.options.indexOf(code) > -1)
+					return is_required = true;
+			});
+			return is_required;
 		},
 		isChosen: function(code) {
 			return this.all.indexOf(code) > -1;
@@ -92,7 +102,7 @@ Vue.component('app-year', {
 			}
 		},
 		unselect: function(code) {
-			if (this.isChosen(code) && !this.isCompulsory(code)) {
+			if (this.isChosen(code) && !this.isRequired(code)) {
 				this.selections.splice(this.selections.indexOf(code), 1);
 			}
 		}
