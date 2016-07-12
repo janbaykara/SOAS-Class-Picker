@@ -4,107 +4,136 @@ var localData = {
 	fetch: function (year) {
 		return JSON.parse(localStorage.getItem(STORAGE_KEY+year) || '[]');
 	},
-	save: function (selections,year) {
-		localStorage.setItem(STORAGE_KEY+year, JSON.stringify(selections));
+	save: function (selectedCodes,year) {
+		localStorage.setItem(STORAGE_KEY+year, JSON.stringify(selectedCodes));
 	}
 };
 
 Vue.component('app-class', {
 	name: 'app-class',
 	template: '#app-class',
-	props: ['unitcode', 'unit']
+	props: ['unit']
 });
 
 Vue.component('app-year', {
 	name: 'app-year',
 	template: '#app-year',
-	props: ['index', 'year', 'course', 'all'],
+	props: ['index', 'year', 'course', 'allclasscodes'],
 	data: function() {
 		return {
-			required_units: 4,
-			selections: (function (year,coursetitle) {
+			requiredCredits: 4,
+			selectedCodes: (function (year,coursetitle) {
 				return JSON.parse(localStorage.getItem(STORAGE_KEY+coursetitle+year) || '[]');
 			})(this.index,this.course.title)
 		}
 	},
 	watch: {
-		selections: {
+		selectedCodes: {
 			deep: true,
-			handler: function (selections) {
-				localStorage.setItem(STORAGE_KEY+this.course.title+this.index, JSON.stringify(selections));
+			handler: function (selectedCodes) {
+				localStorage.setItem(STORAGE_KEY+this.course.title+this.index, JSON.stringify(selectedCodes));
 			}
 		}
 	},
 	computed: {
-		classes: function() {
-			var required = [];
+		requiredCodes: function() {
+			var requiredCodes = [];
 			this.year.option_groups.forEach(function(group) {
 				if(group.required == true || group.type == 'core' || group.type == 'compulsory')
-					required = required.concat(group.options);
+					requiredCodes = requiredCodes.concat(group.options);
 			});
-			return this.selections.concat(required);
+			return requiredCodes;
 		},
-		current_units: function() {
+		classCodes: function() {
+			return this.selectedCodes.concat(this.requiredCodes);
+		},
+		classObjects: function() {
 			var self = this;
-			//
-			var units = 0;
-			self.classes.forEach(function(code) {
-				units = units + self.unitVal(code);
+			var classArr = [];
+			self.classCodes.forEach(function(code) {
+				classArr.push(self.course.options[code]);
 			})
-			return Number(units);
+			return classArr;
+		},
+		currentCredits: function() {
+			var credits = 0;
+			for (var code in this.classObjects) {
+				credits = credits + Number(this.classObjects[code].credits);
+			}
+			return Number(credits);
 		}
 	},
 	methods: {
-		isRequired: function(code) {
+		isRequired: function(unit) {
 			var is_required = false;
 			this.year.option_groups.forEach(function(group) {
-				if(group.required && group.options.indexOf(code) > -1)
+				if(group.required && group.options.indexOf(unit.code) > -1)
 					return is_required = true;
 			});
 			return is_required;
 		},
-		isChosen: function(code) {
-			return this.all.indexOf(code) > -1;
+		isChosen: function(unit) {
+			return this.allclasscodes.indexOf(unit.code) > -1;
 		},
-		hasPrerequisites: function(code) {
-			if(!this.course.options[code].prerequisite_computed) return true;
+		hasPrerequisites: function(unit) {
+			if(!unit.prerequisite_computed) return true;
 
 			var self = this;
 			var requisitesMet = false;
 
-			this.course.options[code].prerequisite_computed.forEach(function(preReqGrp) {
+			unit.prerequisite_computed.forEach(function(preReqGrp) {
 				var groupRequisites = true;
 				preReqGrp.forEach(function(unitcode) {
-					if(!self.isChosen(unitcode)) groupRequisites = false;
+					if(!self.isChosen(self.course.options[unitcode])) groupRequisites = false;
 				});
 				if(groupRequisites == true) requisitesMet = true;
 			});
 
 			return requisitesMet;
 		},
-		unitVal: function(code) {
-			return Number(this.course.options[code].value);
+		isValidGroupChoice: function(delta,unit,group) {
+			var qty = _.intersection(group.options, this.selectedCodes).length;
+			// console.log("Too few:",qty,group.min,group.min !== null && qty < group.min)
+			// console.log("Too many:",qty,group.max,group.max !== null && qty > group.max)
+			var valid = (group.min !== null && qty >= group.min && qty+delta < group.min
+					  || group.max !== null && qty <= group.max && qty+delta > group.max);
+			//
+			return !valid;
 		},
-		isValidGroupChoice: function(group) {
-			var n = _.intersection(group.options, this.selections).length;
-			return !(group.min && n < group.min || group.max && n > group.max);
+		wontExceedUnitCap: function(unit) {
+			return this.currentCredits + unit.credits <= this.requiredCredits
 		},
-		wontExceedUnitCap: function(code) {
-			return this.current_units + this.unitVal(code) <= this.required_units
-		},
-		select: function(code, group) {
-			if (!this.isChosen(code)
-				&& this.wontExceedUnitCap(code)
-				// && this.hasPrerequisites(code)
+		select: function(unit, group) {
+			if (!this.isChosen(unit)
+				&& this.wontExceedUnitCap(unit)
+				&& this.isValidGroupChoice(1, unit, group)
 			) {
-				this.selections.push(code);
-				if(!this.isValidGroupChoice(group)) this.selections.pop();
+				this.selectedCodes.push(unit.code);
 			}
 		},
-		unselect: function(code) {
-			if (this.isChosen(code) && !this.isRequired(code)) {
-				this.selections.splice(this.selections.indexOf(code), 1);
+		unselect: function(unit) {
+			if (this.isChosen(unit)
+				&& !this.isRequired(unit)
+				// && this.isValidGroupChoice(-1, unit, this.optionGroupOf(unit))
+			) {
+				this.selectedCodes.splice(this.selectedCodes.indexOf(unit.code), 1);
 			}
+		},
+		optionGroupOf: function(unit) {
+			var theGroup = null;
+			this.year.option_groups.forEach(function(group) {
+				if(group.options.indexOf(unit.code) > -1) theGroup = group;
+			})
+			return theGroup;
+		}
+	},
+	filters: {
+		unitsFromGrp: function(codes, dictionary) {
+			var units = [];
+			codes.forEach(function(code) {
+				units.push(dictionary[code]);
+			})
+			return units;
 		}
 	}
 });
@@ -124,10 +153,10 @@ $.get("/api/ugprogrammes", function( programmes ) {
 				this.loadCourse();
 				return this.loadingCourse ? {} : this.progData[this.programme];
 			},
-			all: function() {
+			allclasscodes: function() {
 				var allClasses = [];
-				this.$refs.all.forEach(function(el) {
-					allClasses = allClasses.concat(el.classes);
+				this.$refs.allclasscodes.forEach(function(year) {
+					allClasses = allClasses.concat(year.classCodes);
 				})
 				return allClasses;
 			}

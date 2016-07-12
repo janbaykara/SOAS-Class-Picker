@@ -29,12 +29,12 @@
 				<div id='course'>
 					<center><h1><a href='{{course.url}}'>{{course.title}}</a></h1></center>
 					<app-year
-						v-ref:all
+						v-ref:allclasscodes
 						v-for='year, $index in course.structure'
 						:index='$index'
 						:year='course.structure[$index]'
 						:course='course'
-						:all='all'
+						:allclasscodes='allclasscodes'
 					></app-year>
 					<div style='clear: both'></div>
 				</div>
@@ -47,7 +47,7 @@
 		<template id='app-year'>
 			<div class='year'>
 				<header class='year-header yrblock'>
-					<span style='float: right;'>Units: {{current_units}}/{{required_units}}</span>
+					<span style='float: right;'>Credits: {{currentCredits}}/{{requiredCredits}}</span>
 					<h2 style='float: left;'>Year {{index+1}}</h2>
 					<div style='clear: both; display: table;'></div>
 					<slot></slot>
@@ -55,42 +55,42 @@
 				<section class='yrblock'>
 
 					<app-class class='selected'
-						v-for='unitcode in classes'
-						v-on:click='unselect(unitcode)'
-						:unitcode='unitcode'
-						:unit='course.options[unitcode]'
+						v-for="unit in classObjects | orderBy 'title'"
+						v-on:click='unselect(unit)'
+						:unit="unit"
 					></app-class>
 
 				</section>
 				<section class='yrblock selectable-options'>
 					<h3>Options</h3>
-					<article v-for='grp in course.structure[index].option_groups' v-if='!grp.required'>
-						<h4>{{grp.rules}}</h4>
-						<div v-if='grp.options.length > 0'>
+
+					<article v-for='group in course.structure[index].option_groups' v-if='!group.required'>
+						<h4>{{group.rules}}</h4>
+						<div v-if='group.options.length > 0'>
 
 							<app-class class='selectable'
-								v-for='unitcode in grp.options'
-								v-on:click='select(unitcode)'
-								:unitcode='unitcode'
-								:unit='course.options[unitcode]'
+								v-for="unit in group.options | unitsFromGrp course.options | orderBy 'title'"
+								v-on:click='select(unit,group)'
+								:unit="unit"
 							></app-class>
 
 						</div>
 					</article>
+
 				</section>
 			</div>
 		</template>
 
 		<template id='app-class'>
 			<article class='selection'
-				v-bind:class="{ 'compulsory': $parent.isRequired(unitcode), 'chosen': $parent.isChosen(unitcode) }">
+				v-bind:class="{ 'required': $parent.isRequired(unit), 'chosen': $parent.isChosen(unit) }">
 				<div>{{unit.title}}</div>
 				<div>
-					<sub style='float: left;'>{{unitcode}}</sub>
-					<sub style='float: right;'>{{unit.value}} unit</sub>
+					<sub style='float: left;'>{{unit.code}}</sub>
+					<sub style='float: right;'>{{unit.credits}}</sub>
 					<div style='clear: both'></div>
 				</div>
-				<sub class='prerequisites' v-bind:class="{ 'unsatisfied': !$parent.hasPrerequisites(unitcode) }">
+				<sub class='prerequisites' v-bind:class="{ 'unsatisfied': !$parent.hasPrerequisites(unit) }">
 					Prerequisites missing: {{unit.prerequisite_string}}
 				</sub>
 				<div class='description'>{{{unit.description}}}</div>
