@@ -7,19 +7,31 @@
 		<link rel="icon" href="http://www.soas.ac.uk/static/images/soas-icon-64x64.png">
 	</head>
 	<body id='app'>
-		<div id=''>
-			<header class='app-header sec'><h1><img src='http://www.soas.ac.uk/static/assets/soas-logo-100years-orig.png' alt='SOAS' /> Class Options</h1></header>
+		<div>
+			<header class='app-header sec'><h1><img width=146 height=57 src='http://www.soas.ac.uk/static/assets/soas-logo-100years-orig.png' alt='SOAS' /> Class Options</h1></header>
 
 			<main class='sec'>
-				<app-year
-					v-ref:all
-					v-for='year, $index in course.structure'
-					:index='$index'
-					:year='course.structure[$index]'
-					:course='course'
-					:all='all'
-				></app-year>
-				<div style='clear: both'></div>
+
+				<div id='selector'>
+					<label class='dropdown'>
+						<select id='programmes' v-model='programme' v-on:change='loadCourse'>
+							<option v-for='degree in programmes' v-bind:value='degree.path'>{{degree.title}}</option>
+						</select>
+					</label>
+				</div>
+
+				<div id='course'>
+					<center><h1>{{course.title}}</h1></center>
+					<app-year
+						v-ref:all
+						v-for='year, $index in course.structure'
+						:index='$index'
+						:year='course.structure[$index]'
+						:course='course'
+						:all='all'
+					></app-year>
+					<div style='clear: both'></div>
+				</div>
 			</main>
 
 		</div>
@@ -47,10 +59,7 @@
 				<section class='yrblock selectable-options'>
 					<h3>Options</h3>
 					<article v-for='grp in course.structure[index].optional'>
-						<i>Choose
-						{{ !grp.min && !grp.max ? "any from..." : null }}
-						{{ grp.min ? (grp.max ? ( grp.min == grp.max ? null : "from "+grp.min) : "at least "+grp.min) : null }}
-						{{ grp.max ? (grp.min ? ( grp.min == grp.max ? null : "to ") : "up to ")+grp.max : null}}</i>
+						<h4>{{grp.rules}}</h4>
 						<div v-if='grp.options.length > 0'>
 
 							<app-class class='selectable'
@@ -61,7 +70,6 @@
 							></app-class>
 
 						</div>
-						<span v-if='grp.external'><b>other departments</b></span>
 					</article>
 				</section>
 			</div>

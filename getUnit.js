@@ -77,11 +77,13 @@ module.exports = function(unitCode, callback) {
 
 		$('h1').remove();
 		$('dl').remove();
-		var desc = $('#content article').html();
-		// desc = desc.replace(/(?:\r\n|\r|\n)/gi, '<br />'); // convert whitespace lines to real shit
-		desc = desc.replace(/((<br \/>\s*){2,})/gi, ''); // multiple linebreaks
-		desc = desc.replace(/(<\/*(p|ul|h[0-9])>[\s\n]*<br[\s\/]*>|<br[\s\/]*>[\s\n]*<\/(p|ul|h[0-9])>)/gi, ''); // empty paragraphs
-		unit.description = desc;
+		var desc = $('#content article').html() || null;
+		if(desc != null) {
+			// desc = desc.replace(/(?:\r\n|\r|\n)/gi, '<br />'); // convert whitespace lines to real shit
+			desc = desc.replace(/((<br \/>\s*){2,})/gi, ''); // multiple linebreaks
+			desc = desc.replace(/(<\/*(p|ul|h[0-9])>[\s\n]*<br[\s\/]*>|<br[\s\/]*>[\s\n]*<\/(p|ul|h[0-9])>)/gi, ''); // empty paragraphs
+			unit.description = desc;
+		}
 
 		return callback(unit);
 	});

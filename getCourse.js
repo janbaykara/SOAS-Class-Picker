@@ -5,16 +5,17 @@ const getUnit = require("./getUnit");
 
 module.exports = function(coursePath, callback) {
 	var $;
+	coursePath = coursePath.replace(/^\//,'');
+	console.log(coursePath);
 	var course = {
 		url: "https://www.soas.ac.uk/"+coursePath,
 		title: coursePath,
 		structure: [],
 		options: {}
 	};
-	console.log(coursePath,course.url)
 
 	cachedRequest({url: course.url}, function(error, res, body) {
-		if(error) {console.log("Error: " + error);return;}
+		if(error) { console.log("Error: " + error); return; }
 		$ = cheerio.load(body);
 
 		course.title = $('#content h1').text();
@@ -22,65 +23,84 @@ module.exports = function(coursePath, callback) {
 		/* * *
 			Specific course structure
 		* * */
-		var courseStructure = $('#tab2').html();
+		var courseStructure = $('#tab2').html() || null;
 
-		// ## Delimit HTML by <h5>Year [\w]</h5>
-		var courseYears = courseStructure.split(/<h5>(Year [\w]+\s*|Prerequisites)<\/h5>/gi);
-		courseYears = [ "<div><h1>"+courseYears[1]+"</h1>"+courseYears[2]+"</div>",
-						"<div><h1>"+courseYears[3]+"</h1>"+courseYears[4]+"</div>",
-						"<div><h1>"+courseYears[5]+"</h1>"+courseYears[6]+"</div>"];
+		if(courseStructure != null) {
+			// ## Delimit HTML by <h5>Year [\w]</h5>
+			var courseYears = courseStructure.split(/<h5>(Year [\w]+\s*|Prerequisites)<\/h5>/gi);
+			courseYears = [ "<div><h1>"+courseYears[1]+"</h1>"+courseYears[2]+"</div>",
+							"<div><h1>"+courseYears[3]+"</h1>"+courseYears[4]+"</div>",
+							"<div><h1>"+courseYears[5]+"</h1>"+courseYears[6]+"</div>"];
 
-		// ## For each Year, parse:
-		courseYears.forEach(function(yearHTML, yearNumber) {
-			$ = cheerio.load(yearHTML);
+			// ## For each Year, parse:
+			courseYears.forEach(function(yearHTML, yearNumber) {
+				$ = cheerio.load(yearHTML);
 
-			course.structure[yearNumber] = {
-				compulsory: [],
-				optional: []
-			};
+				course.structure[yearNumber] = {
+					compulsory: [],
+					optional: []
+				};
 
-			// #### COMPULSORY listed module IDs
-			var compulsoryCodes = $('h1 + table td:nth-child(2)')
-				.map(function(i, el) { return $(this).text().replace(" ","").trim(); }).get();
-			course.structure[yearNumber].compulsory = compulsoryCodes;
+				// #### COMPULSORY listed module IDs
+				var compulsoryCodes = $('h1 + table td:nth-child(2)')
+					.map(function(i, el) { return $(this).text().replace(" ","").trim(); }).get();
+				course.structure[yearNumber].compulsory = compulsoryCodes;
 
-			// #### OPTION RULES and module IDs
-			var optionalDelimiters = $('h5');
+				// #### OPTION RULES and module IDs
+				var optionalDelimiters = $('h5,h6');
 
-			optionalDelimiters.each(function(i,elm) {
-				var optionGroup = {};
+				optionalDelimiters.each(function(i,elm) {
+					var optionGroup = {};
 
-				/*
-					http://www.soas.ac.uk/politics/programmes/bapolitics/
-						A. TWO of the following DISCIPLINARY units:
-						ONE to THREE
-						A: (+table)
+					///
+					var numtrans =[ ["zero",0],["one",1],["two",2],["three",3],["four",4],["five",5],["six",6],["seven",7],["eight",8],["nine",9],["ten",10]]
+					///
 
-						Parse capitalised words as numbers
-				*/
-				if ($(this).text().indexOf("At least ONE") > -1) {
-					optionGroup.min = 1;
-				} else
-				if ($(this).text().indexOf("ONE of") > -1) {
-					optionGroup.min = 1;
-					optionGroup.max = 1;
-				} else
-				if ($(this).text().indexOf("another department") > -1 ||
-					$(this).text().indexOf("open option") > -1) {
-					optionGroup.external = true;
-				} else if ($(this).next().is(':not(table)')) {
-					return;
-				}
+					var optionHeadingTxt = optionGroup.rules = $(this).text();
+					optionHeadingTxt = optionHeadingTxt.toLowerCase();
+					numtrans.forEach(function(el,i,arr) {
+						optionHeadingTxt = optionHeadingTxt.replace(el[0],el[1]);
+					});
+					/*
+						http://www.soas.ac.uk/politics/programmes/bapolitics/
+							A. TWO of the following DISCIPLINARY units:
+							ONE to THREE
+							ONE or TWO
+							A: (+table)
 
-				optionGroup.options = $(this).next().find('td:nth-child(2)')
-					.map(function(i, el) {
-						var code = $(this).text().trim().replace(/[\s\b ]+/g,"");
-						if(code != null && code != "") return code;
-					}).get();
+							Parse capitalised words as numbers
+					*/
+					if (/At least ([0-9])/i.test(optionHeadingTxt)) {
+						var values = optionHeadingTxt.match(/At least ([0-9])/i);
+						optionGroup.min = values[1];
+					} else
+					if (/([0-9]) (or|to) ([0-9])/i.test(optionHeadingTxt)) {
+						var values = optionHeadingTxt.match(/([0-9]) (or|to) ([0-9])/i);
+						optionGroup.min = values[1];
+						optionGroup.max = values[3];
+					} else
+					if (/([0-9]) of/i.test(optionHeadingTxt)) {
+						var values = optionHeadingTxt.match(/([0-9]) of/i);
+						optionGroup.min = values[1];
+						optionGroup.max = values[1];
+					} else
+					if (optionHeadingTxt.indexOf("another department") > -1 ||
+						optionHeadingTxt.indexOf("open option") > -1) {
+						optionGroup.external = true;
+					} else if ($(this).next().is(':not(table)')) {
+						return;
+					}
 
-				course.structure[yearNumber].optional.push(optionGroup);
+					optionGroup.options = $(this).next().find('td:nth-child(2)')
+						.map(function(i, el) {
+							var code = $(this).text().trim().replace(/[\s\b ]+/g,"");
+							if(code != null && code != "") return code;
+						}).get();
+
+					course.structure[yearNumber].optional.push(optionGroup);
+				});
 			});
-		});
+		}
 
 		/* * *
 			Scan all courses
@@ -91,7 +111,7 @@ module.exports = function(coursePath, callback) {
 		// For each module URL listed on the course page...
 		var unitCodes = [];
 		lesson_links.each(function(index, unit) {
-			var unit = $(unit).attr('href').match(/[0-9]{4,10}/)[0];
+			var unit = $(unit).attr('href').match(/[0-9]{4,10}/gi)[0];
 			unitCodes.push(unit)
 		});
 

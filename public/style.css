@@ -160,3 +160,8 @@ main.sec,
 .selectable-options {
     background: #FAFAFA !important;
 }
+
+#selector {
+    padding: 20px;
+    text-align: center;
+}

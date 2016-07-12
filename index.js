@@ -21,8 +21,8 @@ app.get('/api/course', (appReq, appRes) => {
 	});
 });
 
-app.get('/api/unit/:unitCode', (appReq, appRes) => {
-	getUnit(appReq.params.unitCode, (unit) => {
+app.get('/api/unit/:code', (appReq, appRes) => {
+	getUnit(appReq.params.code, (unit) => {
 		appRes.json(unit);
 	});
 });

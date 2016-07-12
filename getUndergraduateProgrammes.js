@@ -10,9 +10,13 @@ module.exports = function(callback) {
 
 		links.each(function(index,link) {
 			programmes.push({
-				url: $(link).attr('href'),
+				url: "https://www.soas.ac.uk"+$(link).attr('href'),
+				path: $(link).attr('href'),
 				title: $(link).text()
 			});
+		});
+		programmes.sort(function(a, b) {
+		   return a.title.localeCompare(b.title);
 		});
 
 		return callback(programmes);
