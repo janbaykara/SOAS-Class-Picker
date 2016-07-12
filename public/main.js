@@ -107,10 +107,11 @@ $.get("/api/ugprogrammes", function( programmes ) {
 		    programme: '/politics/programmes/ba-politics-and-international-relations/', // default
 			programmes: programmes,
 			progData: {},
-			loadingCourse: false
+			loadingCourse: true
 		},
 		computed: {
 			course: function() {
+				this.loadCourse();
 				return this.loadingCourse ? {} : this.progData[this.programme];
 			},
 			all: function() {
@@ -133,11 +134,13 @@ $.get("/api/ugprogrammes", function( programmes ) {
 					console.log("Loading:",chosenProg)
 
 					$.get("/api/course?path="+chosenProg, function( course ) {
-						self.loadingCourse = false;
 						self.progData[chosenProg] = course;
+						self.loadingCourse = false;
 						console.log("!!! Finished:", chosenProg, self.course);
+						return self.course;
 					});
 				} else {
+					self.loadingCourse = false;
 					console.log("Cached:",chosenProg, self.progData[chosenProg]);
 				}
 			}

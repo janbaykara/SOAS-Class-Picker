@@ -8,7 +8,10 @@
 	</head>
 	<body id='app'>
 		<div>
-			<header class='app-header sec'><h1><img width=146 height=57 src='http://www.soas.ac.uk/static/assets/soas-logo-100years-orig.png' alt='SOAS' /> Class Options</h1></header>
+			<header class='app-header sec'><h1>
+				<!-- <img width=146 height=57 src='http://www.soas.ac.uk/static/assets/soas-logo-100years-orig.png' alt='SOAS' /> -->
+				<center>Class Options</center>
+			</h1></header>
 
 			<main class='sec'>
 
@@ -18,6 +21,9 @@
 							<option v-for='degree in programmes' v-bind:value='degree.path'>{{degree.title}}</option>
 						</select>
 					</label>
+					<center v-if='loadingCourse'>
+						<img src='http://www.arabianbusiness.com/skins/ab.main/gfx/loading_spinner.gif' />
+					</center>
 				</div>
 
 				<div id='course'>
