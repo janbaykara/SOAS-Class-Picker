@@ -1,14 +1,5 @@
 var STORAGE_KEY = 'soas-classess';
 
-var localData = {
-	fetch: function (year) {
-		return JSON.parse(localStorage.getItem(STORAGE_KEY+year) || '[]');
-	},
-	save: function (selectedCodes,year) {
-		localStorage.setItem(STORAGE_KEY+year, JSON.stringify(selectedCodes));
-	}
-};
-
 Vue.component('app-class', {
 	name: 'app-class',
 	template: '#app-class',
@@ -143,10 +134,20 @@ $.get("/api/ugprogrammes", function( programmes ) {
 	var app = new Vue({
 		el: '#app',
 		data: {
-		    programme: '/politics/programmes/ba-politics-and-international-relations/', // default
 			programmes: programmes,
 			progData: {},
-			loadingCourse: true
+			loadingCourse: true,
+			programme: (function () {
+				return JSON.parse(localStorage.getItem(STORAGE_KEY+"selectedProgramme")) || "/politics/programmes/ba-politics-and-international-relations/";
+			})()
+		},
+		watch: {
+			programme: {
+				deep: true,
+				handler: function (programme) {
+					localStorage.setItem(STORAGE_KEY+"selectedProgramme", JSON.stringify(programme));
+				}
+			}
 		},
 		computed: {
 			course: function() {
