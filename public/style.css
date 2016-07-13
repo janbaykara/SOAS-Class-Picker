@@ -191,9 +191,13 @@ main.sec,
 }
 .selection {
     position: relative;
+    transition-property: opacity;
+    transition-duration: 0.25s;
+    transition-delay: 0s;
 }
 .selection:hover {
     opacity: 1;
     z-index: 999 !important;
     background: white;
+    transition-delay: 2s;
 }
