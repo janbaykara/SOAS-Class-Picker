@@ -41,14 +41,7 @@ module.exports = function(coursePath, callback) {
 				};
 
 				// Compulsory/core modules
-				var compulsory = $('\
-					h1 + table,\
-					h1 + p + table,\
-					*:contains("Core") + table,\
-					*:contains("Core") + p + table\
-					*:contains("Compulsory") + table,\
-					*:contains("Compulsory") + p + table'
-				)
+				var compulsory = $('h1 + table, h1 + p + table');
 
 				if(compulsory && compulsory.length > 0) {
 					var compulsoryMods = compulsory.find('td:nth-child(2)').map(function(i, el) {
@@ -59,10 +52,6 @@ module.exports = function(coursePath, callback) {
 
 					year.option_groups.push({
 						required: true,
-						rules: $('h5:contains("Core"),\
-								  h6:contains("Core"),\
-								  h5:contains("Compulsory"),\
-								  h6:contains("Compulsory")').text() || null,
 						options: compulsoryMods
 					})
 				}
@@ -120,6 +109,7 @@ module.exports = function(coursePath, callback) {
 
 					if(optionGroup.options.length > 0) {
 						// if(optionGroup.options.length == 1) optionGroup.required = true;
+						if(/(core|compulsory)/.test(optionGroup.rules.toLowerCase())) optionGroup.required = true;
 						optionGroup.min = Number(optionGroup.min) || null;
 						optionGroup.max = Number(optionGroup.max) || null;
 						year.option_groups.push(optionGroup);
