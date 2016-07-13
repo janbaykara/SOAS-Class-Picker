@@ -15,9 +15,11 @@ module.exports = function(callback) {
 				title: $(link).text()
 			});
 		});
-		programmes.sort(function(a, b) {
-		   return a.title.localeCompare(b.title);
-		});
+		if(typeof links != 'undefined' && links.length > 0) {
+			programmes.sort(function(a, b) {
+				return a.title.localeCompare(b.title);
+			});
+		}
 
 		return callback(programmes);
 	});

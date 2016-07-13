@@ -43,6 +43,7 @@ module.exports = function(coursePath, callback) {
 				// Compulsory/core modules
 				var compulsory = $('\
 					h1 + table,\
+					h1 + p + table,\
 					*:contains("Core") + table,\
 					*:contains("Core") + p + table\
 					*:contains("Compulsory") + table,\
@@ -118,7 +119,7 @@ module.exports = function(coursePath, callback) {
 						}).get();
 
 					if(optionGroup.options.length > 0) {
-						if(optionGroup.options.length == 1) optionGroup.required = true;
+						// if(optionGroup.options.length == 1) optionGroup.required = true;
 						optionGroup.min = Number(optionGroup.min) || null;
 						optionGroup.max = Number(optionGroup.max) || null;
 						year.option_groups.push(optionGroup);
