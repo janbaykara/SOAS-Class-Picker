@@ -55,10 +55,11 @@
 				<section class='yrblock'>
 
 					<app-class class='selected'
-						v-for="unit in classObjects | orderBy 'title'"
+						v-for="unit in classObjects | orderBy 'title' optionGroupOf(unit).required"
 						v-on:click='unselect(unit)'
 						:unit="unit"
 					></app-class>
+					<div class='wildcard'></div>
 
 				</section>
 				<section class='yrblock selectable-options'>
@@ -69,10 +70,11 @@
 						<div v-if='group.options.length > 0'>
 
 							<app-class class='selectable'
-								v-for="unit in group.options | unitsFromGrp course.options | orderBy 'title'"
+								v-for="unit in group.options | unitsFromGrp course.options | orderBy 'title' isChosen(unit)"
 								v-on:click='select(unit,group)'
 								:unit="unit"
 							></app-class>
+							<div class='wildcard'></div>
 
 						</div>
 					</article>
