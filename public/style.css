@@ -26,15 +26,17 @@ body {
 	width: 33.3333%;
 	float: left;
 }
+.yrblock h2 {
+	margin-bottom: 0 !important;
+}
 .yrblock {
-	padding: 0 20px;
+	padding: 0 20px 20px;
 }
 .yrblock:nth-child(1) {
 	padding-top: 10px;
 }
 .yrblock:nth-child(2) {
     border-bottom: 1px solid #EEE;
-	padding-bottom: 20px;
 }
 .year + .year {
     border-left: 1px solid #EEE;
