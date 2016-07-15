@@ -32,16 +32,21 @@
 					</center>
 				</div>
 
-				<div id='course'>
-					<center><h1><a href='{{course.url}}'>{{course.title}}</a></h1></center>
+				<div id='course' v-if='!isLoadingCourse' v-bind:class='{combined: isCombinedCourse}'>
+					<center>
+						<h1 class='course-title'>
+							<template v-if='isCombinedCourse'>{{course.meta[course.path[0]].classification}} <span v-for='subj in course.meta'><a href='{{subj.url}}'>{{subj.subject}}</a></span></template>
+							<template v-if='!isCombinedCourse'>{{course.meta[course.path[0]].title}}</template>
+						</h1>
+					</center>
 					<app-year
 						v-ref:allclasscodes
-						v-for='year, $index in course.structure'
-						:index='$index'
+						v-for='year in course.structure'
+						:yearnumber='$index'
 						:year='course.structure[$index]'
 						:course='course'
 						:allclasscodes='allclasscodes'
-						:sessionID='sessionID'
+						:courseid='courseid'
 					></app-year>
 					<div style='clear: both'></div>
 				</div>
@@ -55,7 +60,7 @@
 			<div class='year'>
 				<header class='year-header yrblock'>
 					<span style='float: right;'>Credits: {{currentCredits}}/{{requiredCredits}}</span>
-					<h2 style='float: left;'>Year {{index+1}}</h2>
+					<h2 style='float: left;'>Year {{yearnumber+1}}</h2>
 					<div style='clear: both; display: table;'></div>
 					<slot></slot>
 				</header>
@@ -70,11 +75,14 @@
 
 				</section>
 
-				<section class='yrblock selectable-options' v-for='course in courses'>
-					<h3>{{course.title}} options</h3>
+				<section class='yrblock selectable-options'>
+					<h3>Options</h3>
 
-					<article v-for='group in course.structure[index].option_groups' v-if='!group.required'>
-						<h4>{{group.rules}}</h4>
+					<article v-for='group in year.option_groups' v-if='!group.required'>
+						<h4>
+							<span class='subject-option'>{{course.meta[group.coursePath].subject}}</span>
+							<span>{{group.rules}}</span>
+						</h4>
 						<div v-if='group.options.length > 0'>
 
 							<app-class class='selectable'
@@ -94,7 +102,10 @@
 		<template id='app-class'>
 			<article class='selection'
 				v-bind:class="{ 'required': $parent.isRequired(unit), 'chosen': $parent.isChosen(unit) }">
-				<div>{{unit.title}}</div>
+				<div>
+					<span class='subject-option'>{{$parent.course.meta[unit.coursePath].subject}}</span>
+					<span>{{unit.title}}</span>
+				</div>
 				<div>
 					<sub style='float: left;'>{{unit.code}}</sub>
 					<sub style='float: right;'>{{unit.credits}}</sub>

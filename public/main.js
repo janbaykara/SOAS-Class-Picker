@@ -9,20 +9,20 @@ Vue.component('app-class', {
 Vue.component('app-year', {
 	name: 'app-year',
 	template: '#app-year',
-	props: ['index', 'year', 'course', 'allclasscodes','sessionID'],
+	props: ['yearnumber', 'year', 'course', 'allclasscodes','courseid'],
 	data: function() {
 		return {
 			requiredCredits: 4,
-			selectedCodes: (function (year,sessionID) {
-				return JSON.parse(localStorage.getItem(STORAGE_KEY+sessionID+year) || '[]');
-			})(this.index,this.sessionID)
+			selectedCodes: (function (year,courseid) {
+				return JSON.parse(localStorage.getItem(STORAGE_KEY+courseid+year) || '[]');
+			})(this.yearnumber,this.courseid)
 		}
 	},
 	watch: {
 		selectedCodes: {
 			deep: true,
 			handler: function (selectedCodes) {
-				localStorage.setItem(STORAGE_KEY+this.sessionID+this.index, JSON.stringify(selectedCodes));
+				localStorage.setItem(STORAGE_KEY+this.courseid+this.yearnumber, JSON.stringify(selectedCodes));
 			}
 		}
 	},
@@ -150,46 +150,23 @@ $.get("/api/ugprogrammes", function( programmes ) {
 		},
 		computed: {
 			isCombinedCourse: function() {
-				return this.programme[0].combination ? true : false
+				return this.programme[0].combination
 			},
 			isLoadingCourse: function() {
-				var self = this;
-				var programsLoaded = _.every(self.programme, function(selectedProg) {
-					if(selectedProg == null) return true;
-					var selectedHasLoaded = _.some(self.progData, function(prog) {
-						return prog.path == selectedProg.path;
-					});
-					return selectedHasLoaded;
-				})
-				return !programsLoaded;
+				return !this.progData[this.courseid];
 			},
-			course: function() {
-				this.loadCourse();
-
-				if(this.isLoadingCourse) return {}
-
-				if(this.isCombinedCourse) {
-					var course = {
-						combined:true,
-						courseData:[
-							this.progData[this.programme[0].path],
-							this.progData[this.programme[1].path]
-						]
-					};
-				} else {
-					var course = {
-						combined: false,
-						courseData: [
-							this.progData[this.programme[0].path]
-						]
-					}
-				}
-				console.log("Course data updated!",course);
-				return course;
-			},
-			sessionID: function() {
-				if(this.programme[1]) return this.programme[0].path+this.programme[1].path;
+			courseid: function() {
+				if(this.programme[1]) return _.sortBy([this.programme[0].path,this.programme[1].path]).join(",")
 				return this.programme[0].path;
+			},
+			course: {
+				cache: true,
+				get: function() {
+					var course = this.progData[this.courseid];
+
+					console.log("Course data updated!",course);
+					return course;
+				}
 			},
 			allclasscodes: function() {
 				var allClasses = [];
@@ -206,28 +183,26 @@ $.get("/api/ugprogrammes", function( programmes ) {
 			loadCourse: function() {
 				var self = this;
 
-				if(!self.isCombinedCourse) {
+				if(this.programme[0].combination) {
 					delete self.programme[1]
 				}
 
-				self.programme.forEach(function(p,i) {
-					// console.log("----\nhttps://www.soas.ac.uk"+p.path);
-					console.log("---\nFetching: http://localhost:3000/api/course?path="+p.path);
+				// console.log("----\nhttps://www.soas.ac.uk"+p.path);
+				console.log("---\nFetching: http://localhost:3000/api/course?path="+self.courseid);
 
-					if(self.progData[p.path] == null) {
-						console.log("Loading:", p.title)
+				if(self.progData[self.courseid] == null) {
+					console.log("Loading:", self.courseid)
 
-						$.get("/api/course?path="+p.path, function( course ) {
-							// self.progData[p.path] = course;
-							Vue.set(self.progData, p.path, course);
-							console.log("Finished:", p.title, self.progData[p.path]);
-							return self.isLoadingCourse;
-						});
-					} else {
-						console.log("Cached:", p.title, self.progData);
+					$.get("/api/course?path="+self.courseid, function( course ) {
+						// self.progData[self.courseid] = course;
+						Vue.set(self.progData, self.courseid, course);
+						console.log("Finished:", self.courseid, self.progData[self.courseid]);
 						return self.isLoadingCourse;
-					}
-				})
+					});
+				} else {
+					console.log("Cached:", self.courseid, self.progData);
+					return self.isLoadingCourse;
+				}
 			}
 		}
 	});

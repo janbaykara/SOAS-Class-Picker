@@ -203,3 +203,14 @@ main.sec,
     background: white;
     transition-delay: 2s;
 }
+.course-title span + span:before {
+    content: " and ";
+}
+.subject-option { display: none; }
+.combined .subject-option {
+    display: block !important;
+    opacity: 0.5;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: bold !important;
+}
