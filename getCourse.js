@@ -9,7 +9,9 @@ module.exports = function(coursePath, callback) {
 	console.log(coursePath);
 	var course = {
 		url: "https://www.soas.ac.uk/"+coursePath,
+		path: coursePath,
 		title: coursePath,
+		combination: false,
 		structure: [],
 		options: {}
 	};
@@ -20,10 +22,15 @@ module.exports = function(coursePath, callback) {
 
 		course.title = $('#content h1').text();
 
+		if(/(combined honours|two subject|([\.]{3}|(\.\s){3}))/gi.test(course.title.toLowerCase())) {
+			course.combination = true;
+		}
+
 		/* * *
 			Specific course structure
 		* * */
-		var courseStructure = $('#tab2').html() || null;
+		var tabId = "#"+$('.tabs > *:contains("Structure")').attr('rel');
+		var courseStructure = $(tabId).html() || null;
 
 		if(courseStructure != null) {
 			// ## Delimit HTML by <h5>Year [\w]</h5>
@@ -122,13 +129,13 @@ module.exports = function(coursePath, callback) {
 			Scan all courses
 		* * */
 		$ = cheerio.load(body);
-		var lesson_links = $('#tab2 table td:first-child a');
+		var lesson_links = $(tabId+' table td:first-child a');
 
 		// For each module URL listed on the course page...
 		var unitCodes = [];
 		lesson_links.each(function(index, unit) {
-			var unit = $(unit).attr('href').match(/[0-9]{4,10}/gi)[0];
-			unitCodes.push(unit)
+			var unitCodeFinds = $(unit).attr('href').match(/[0-9]{4,10}/gi);
+			if(unitCodeFinds) unitCodes.push(unitCodeFinds[0])
 		});
 
 		function onlyUnique(value, index, self) { return self.indexOf(value) === index; }

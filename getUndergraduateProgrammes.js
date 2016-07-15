@@ -9,11 +9,16 @@ module.exports = function(callback) {
 		var links = $('#content .links a');
 
 		links.each(function(index,link) {
-			programmes.push({
+			var course = {
 				url: "https://www.soas.ac.uk"+$(link).attr('href'),
-				path: $(link).attr('href'),
+				path: $(link).attr('href').replace(/^\//,''),
 				title: $(link).text()
-			});
+			};
+			if(/(combined honours|two subject|([\.]{3}|(\.\s){3}))/gi.test(course.title.toLowerCase())) {
+				course.combination = true;
+			}
+
+			programmes.push(course);
 		});
 		if(typeof links != 'undefined' && links.length > 0) {
 			programmes.sort(function(a, b) {
