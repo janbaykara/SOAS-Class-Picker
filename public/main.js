@@ -9,20 +9,20 @@ Vue.component('app-class', {
 Vue.component('app-year', {
 	name: 'app-year',
 	template: '#app-year',
-	props: ['index', 'year', 'course', 'allclasscodes'],
+	props: ['index', 'year', 'course', 'allclasscodes','sessionID'],
 	data: function() {
 		return {
 			requiredCredits: 4,
-			selectedCodes: (function (year,coursetitle) {
-				return JSON.parse(localStorage.getItem(STORAGE_KEY+coursetitle+year) || '[]');
-			})(this.index,this.course.title)
+			selectedCodes: (function (year,sessionID) {
+				return JSON.parse(localStorage.getItem(STORAGE_KEY+sessionID+year) || '[]');
+			})(this.index,this.sessionID)
 		}
 	},
 	watch: {
 		selectedCodes: {
 			deep: true,
 			handler: function (selectedCodes) {
-				localStorage.setItem(STORAGE_KEY+this.course.title+this.index, JSON.stringify(selectedCodes));
+				localStorage.setItem(STORAGE_KEY+this.sessionID+this.index, JSON.stringify(selectedCodes));
 			}
 		}
 	},
@@ -136,9 +136,8 @@ $.get("/api/ugprogrammes", function( programmes ) {
 		data: {
 			programmes: programmes,
 			progData: {},
-			loadingCourse: true,
 			programme: (function () {
-				return JSON.parse(localStorage.getItem(STORAGE_KEY+"selectedProgramme")) || "/politics/programmes/ba-politics-and-international-relations/";
+				return JSON.parse(localStorage.getItem(STORAGE_KEY+"selectedProgramme")) || [_.find(programmes, function(degree) { return degree.path == "politics/programmes/ba-politics-and-international-relations/" })]
 			})()
 		},
 		watch: {
@@ -150,9 +149,47 @@ $.get("/api/ugprogrammes", function( programmes ) {
 			}
 		},
 		computed: {
+			isCombinedCourse: function() {
+				return this.programme[0].combination ? true : false
+			},
+			isLoadingCourse: function() {
+				var self = this;
+				var programsLoaded = _.every(self.programme, function(selectedProg) {
+					if(selectedProg == null) return true;
+					var selectedHasLoaded = _.some(self.progData, function(prog) {
+						return prog.path == selectedProg.path;
+					});
+					return selectedHasLoaded;
+				})
+				return !programsLoaded;
+			},
 			course: function() {
 				this.loadCourse();
-				return this.loadingCourse ? {} : this.progData[this.programme];
+
+				if(this.isLoadingCourse) return {}
+
+				if(this.isCombinedCourse) {
+					var course = {
+						combined:true,
+						courseData:[
+							this.progData[this.programme[0].path],
+							this.progData[this.programme[1].path]
+						]
+					};
+				} else {
+					var course = {
+						combined: false,
+						courseData: [
+							this.progData[this.programme[0].path]
+						]
+					}
+				}
+				console.log("Course data updated!",course);
+				return course;
+			},
+			sessionID: function() {
+				if(this.programme[1]) return this.programme[0].path+this.programme[1].path;
+				return this.programme[0].path;
 			},
 			allclasscodes: function() {
 				var allClasses = [];
@@ -163,28 +200,38 @@ $.get("/api/ugprogrammes", function( programmes ) {
 			}
 		},
 		methods: {
+			degreeFromPath: function(path) {
+				return _.find(this.programmes, function(degree) { return degree.path == path });
+			},
 			loadCourse: function() {
 				var self = this;
-				var chosenProg = self.programme;
-				console.log("----\nhttps://www.soas.ac.uk"+chosenProg);
-				console.log("\nhttp://localhost:3000/api/course?path="+chosenProg);
 
-				if(self.progData[chosenProg] == null) {
-					self.loadingCourse = true;
-					console.log("Loading:",chosenProg)
-
-					$.get("/api/course?path="+chosenProg, function( course ) {
-						self.progData[chosenProg] = course;
-						self.loadingCourse = false;
-						console.log("!!! Finished:", chosenProg, self.course);
-						return self.course;
-					});
-				} else {
-					self.loadingCourse = false;
-					console.log("Cached:",chosenProg, self.progData[chosenProg]);
+				if(!self.isCombinedCourse) {
+					delete self.programme[1]
 				}
+
+				self.programme.forEach(function(p,i) {
+					// console.log("----\nhttps://www.soas.ac.uk"+p.path);
+					console.log("---\nFetching: http://localhost:3000/api/course?path="+p.path);
+
+					if(self.progData[p.path] == null) {
+						console.log("Loading:", p.title)
+
+						$.get("/api/course?path="+p.path, function( course ) {
+							// self.progData[p.path] = course;
+							Vue.set(self.progData, p.path, course);
+							console.log("Finished:", p.title, self.progData[p.path]);
+							return self.isLoadingCourse;
+						});
+					} else {
+						console.log("Cached:", p.title, self.progData);
+						return self.isLoadingCourse;
+					}
+				})
 			}
 		}
 	});
+
+	app.loadCourse();
 
 });

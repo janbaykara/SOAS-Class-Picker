@@ -17,11 +17,17 @@
 
 				<div id='selector'>
 					<label class='dropdown'>
-						<select id='programmes' v-model='programme' v-on:change='loadCourse'>
-							<option v-for='degree in programmes' v-bind:value='degree.path'>{{degree.title}}</option>
+						<select class='programmes' v-model='programme[0]' v-on:change='loadCourse()'>
+							<option v-for='degree in programmes' v-bind:value='degreeFromPath(degree.path)'>{{degree.title}}</option>
 						</select>
 					</label>
-					<center v-if='loadingCourse'>
+					<label class='dropdown'>
+						<select v-if='programme[0].combination == true'
+							class='programmes' v-model='programme[1]' v-on:change='loadCourse()'>
+							<option v-for="degree in programmes | filterBy true in 'combination'" v-bind:value='degreeFromPath(degree.path)'>{{degree.title}}</option>
+						</select>
+					</label>
+					<center v-if='isLoadingCourse'>
 						<img style='margin: 20px; width: 50px;' src='loading.gif' />
 					</center>
 				</div>
@@ -35,6 +41,7 @@
 						:year='course.structure[$index]'
 						:course='course'
 						:allclasscodes='allclasscodes'
+						:sessionID='sessionID'
 					></app-year>
 					<div style='clear: both'></div>
 				</div>
@@ -62,8 +69,9 @@
 					<div class='wildcard'></div>
 
 				</section>
-				<section class='yrblock selectable-options'>
-					<h3>Options</h3>
+
+				<section class='yrblock selectable-options' v-for='course in courses'>
+					<h3>{{course.title}} options</h3>
 
 					<article v-for='group in course.structure[index].option_groups' v-if='!group.required'>
 						<h4>{{group.rules}}</h4>
