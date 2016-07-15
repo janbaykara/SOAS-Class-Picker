@@ -28,7 +28,7 @@ module.exports = function(coursePath, rootCallback) {
 				c1.path.push(c2.path[0])
 				c1.meta = merge(c1.meta,c2.meta);
 				c1.structure.forEach(function(year, i) {
-					console.log("Merging Yr "+i+"; no. of course: ",c1.structure[i].option_groups.length,c2.structure[i].option_groups.length)
+					// console.log("Merging Yr "+i+"; no. of course: ",c1.structure[i].option_groups.length,c2.structure[i].option_groups.length)
 					c1.structure[i].option_groups = c1.structure[i].option_groups.concat(c2.structure[i].option_groups);
 				});
 				c1.options = merge(c1.options, c2.options);
@@ -94,7 +94,7 @@ module.exports = function(coursePath, rootCallback) {
 					// Compulsory/core modules
 					var compulsory = $('h1 + table, h1 + p + table');
 
-					if(compulsory && compulsory.length > 0) {
+					if(compulsory && compulsory.length > 0 && compulsory.next().text() != "OR") {
 						var compulsoryMods = compulsory.find('td:nth-child(2)').map(function(i, el) {
 							var code = $(this).text().trim().replace(/[\s\b ]+/g,"");
 							if(code != null && code != "") return Number(code);
@@ -161,7 +161,9 @@ module.exports = function(coursePath, rootCallback) {
 
 						if(optionGroup.options.length > 0) {
 							// if(optionGroup.options.length == 1) optionGroup.required = true;
-							if(/(core|compulsory)/.test(optionGroup.rules.toLowerCase())) optionGroup.required = true;
+							if(/(core|compulsory)/.test(optionGroup.rules.toLowerCase())
+								&& (!optionalDelimiters[i+1] || $(optionalDelimiters[i+1]).text() !== "OR"))
+									optionGroup.required = true;
 							optionGroup.min = Number(optionGroup.min) || null;
 							optionGroup.max = Number(optionGroup.max) || null;
 							optionGroup.coursePath = coursePath;
