@@ -7,15 +7,17 @@ const getUnit = require("./getUnit");
 module.exports = function(coursePath, rootCallback) {
 	var $;
 	var coursePaths = coursePath.split(',');
-	console.log("---\nInitial request",coursePaths);
+	console.log("---\n1. Initial request",coursePaths);
 
 	coursePaths.forEach(function(coursePath, index) {
+		console.log("2. Loading "+coursePath)
 		parseCourse(coursePath, wrapUp)
 	})
 
 	var courseData = [];
 
 	function wrapUp(course) {
+		console.log("3. Loaded",course.path[0])
 		courseData.push(course);
 
 		if(courseData.length == coursePaths.length) {
@@ -34,6 +36,7 @@ module.exports = function(coursePath, rootCallback) {
 				c1.options = merge(c1.options, c2.options);
 			}
 
+			console.log("4. Sending data");
 			rootCallback(c1);
 		}
 	}
@@ -122,15 +125,7 @@ module.exports = function(coursePath, rootCallback) {
 						numtrans.forEach(function(el,i,arr) {
 							optionHeadingTxt = optionHeadingTxt.replace(el[0],el[1]);
 						});
-						/*
-							http://www.soas.ac.uk/politics/programmes/bapolitics/
-								A. TWO of the following DISCIPLINARY units:
-								ONE to THREE
-								ONE or TWO
-								A: (+table)
 
-								Parse capitalised words as numbers
-						*/
 						if (/At least ([0-9])/i.test(optionHeadingTxt)) {
 							var values = optionHeadingTxt.match(/At least ([0-9])/i);
 							optionGroup.min = values[1];
@@ -149,8 +144,7 @@ module.exports = function(coursePath, rootCallback) {
 							optionHeadingTxt.indexOf("open option") > -1) {
 							optionGroup.external = true;
 						} else if (!$(this).nextUntil('h5,h6').is('table')) {
-							// console.log("      ---has no table");
-							return;
+							return false;
 						}
 
 						optionGroup.options = $(this).nextUntil('h5,h6').find('td:nth-child(2)')
@@ -160,7 +154,6 @@ module.exports = function(coursePath, rootCallback) {
 							}).get();
 
 						if(optionGroup.options.length > 0) {
-							// if(optionGroup.options.length == 1) optionGroup.required = true;
 							if(/(core|compulsory)/.test(optionGroup.rules.toLowerCase())
 								&& (!optionalDelimiters[i+1] || $(optionalDelimiters[i+1]).text() !== "OR"))
 									optionGroup.required = true;
