@@ -75,7 +75,6 @@ Vue.component('app-year', {
 
 			var result = !_.some(unit.prerequisite_computed, function(preReqGrp) {
 				return _.every(preReqGrp, function(unitcode) {
-					if(unit.code == 153400075) console.log(preReqGrp,self.isChosen(unitcode))
 					return self.isChosen(unitcode)
 				});
 			});
@@ -83,8 +82,6 @@ Vue.component('app-year', {
 		},
 		isValidGroupChoice: function(delta,unit,group) {
 			var qty = _.intersection(group.options, this.selectedCodes).length;
-			// console.log("Too few:",qty,group.min,group.min !== null && qty < group.min)
-			// console.log("Too many:",qty,group.max,group.max !== null && qty > group.max)
 			var valid = (group.min !== null && qty >= group.min && qty+delta < group.min
 					  || group.max !== null && qty <= group.max && qty+delta > group.max);
 			//
