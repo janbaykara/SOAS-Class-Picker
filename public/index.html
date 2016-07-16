@@ -101,7 +101,7 @@
 
 		<template id='app-class'>
 			<article class='selection'
-				v-bind:class="{ 'required': $parent.isRequired(unit), 'chosen': $parent.isChosen(unit) }">
+				v-bind:class="{ 'unsatisfied': $parent.missingPrerequisites(unit), 'required': $parent.isRequired(unit), 'chosen': $parent.isChosen(unit) }">
 				<div>
 					<span class='subject-option'>{{$parent.course.meta[unit.coursePath].subject}}</span>
 					<span>{{unit.title}}</span>
@@ -111,9 +111,7 @@
 					<sub style='float: right;'>{{unit.credits}}</sub>
 					<div style='clear: both'></div>
 				</div>
-				<sub class='prerequisites' v-bind:class="{ 'unsatisfied': !$parent.hasPrerequisites(unit) }">
-					Prerequisites missing: {{unit.prerequisite_string}}
-				</sub>
+				<sub class='prerequisites'>{{unit.prerequisite_string}}</sub>
 				<div class='description'>{{{unit.description}}}</div>
 			</article>
 		</template>

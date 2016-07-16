@@ -118,10 +118,18 @@ sub {
 .prerequisites {
     display: none;
 }
-.prerequisites.unsatisfied {
+.unsatisfied {
+	border-left-color: darkred !important;
+}
+.unsatisfied.selected .prerequisites,
+.unsatisfied.selectable:hover .prerequisites {
     display: block;
     color: red;
 }
+.unsatisfied .prerequisites:before {
+	content: "Prerequisite courses missing:";
+}
+
 .selection {
     position: relative;
 }

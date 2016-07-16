@@ -64,23 +64,22 @@ Vue.component('app-year', {
 			return is_required;
 		},
 		isChosen: function(unit) {
-			return this.allclasscodes.indexOf(unit.code) > -1;
+			unitcode = unit !== null && typeof unit === 'object' ? unit.code : unit
+			return this.allclasscodes.indexOf(Number(unitcode)) > -1;
 		},
-		hasPrerequisites: function(unit) {
-			if(!unit.prerequisite_computed) return true;
+		missingPrerequisites: function(unit) {
+			if(!unit.prerequisite_computed) return false;
 
 			var self = this;
 			var requisitesMet = false;
 
-			unit.prerequisite_computed.forEach(function(preReqGrp) {
-				var groupRequisites = true;
-				preReqGrp.forEach(function(unitcode) {
-					if(!self.isChosen(self.course.options[unitcode])) groupRequisites = false;
+			var result = !_.some(unit.prerequisite_computed, function(preReqGrp) {
+				return _.every(preReqGrp, function(unitcode) {
+					if(unit.code == 153400075) console.log(preReqGrp,self.isChosen(unitcode))
+					return self.isChosen(unitcode)
 				});
-				if(groupRequisites == true) requisitesMet = true;
 			});
-
-			return requisitesMet;
+			return result;
 		},
 		isValidGroupChoice: function(delta,unit,group) {
 			var qty = _.intersection(group.options, this.selectedCodes).length;
