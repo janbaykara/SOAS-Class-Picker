@@ -33,7 +33,14 @@ module.exports = function(coursePath, rootCallback) {
 					// console.log("Merging Yr "+i+"; no. of course: ",c1.structure[i].option_groups.length,c2.structure[i].option_groups.length)
 					c1.structure[i].option_groups = c1.structure[i].option_groups.concat(c2.structure[i].option_groups);
 				});
-				c1.options = merge(c1.options, c2.options);
+				// c1.options = merge(c1.options, c2.options);
+				for (var unitCode in c2.options) {
+					if(c1.options[unitCode]) {
+						c2.options[unitCode].coursePath.push( c1.options[unitCode].coursePath[0] );
+						c2.options[unitCode].coursePath.sort((a, b) => {return a-b});
+					}
+					c1.options[unitCode] = c2.options[unitCode];
+				}
 			}
 
 			console.log("4. Sending data");
@@ -115,7 +122,7 @@ module.exports = function(coursePath, rootCallback) {
 					var optionalDelimiters = $('h5,h6');
 
 					optionalDelimiters.each(function(i,elm) {
-						// console.log($(elm).text());
+						console.log($(elm).text());
 						var optionGroup = {};
 
 						var optionHeadingTxt = optionGroup.rules = $(this).text();
@@ -143,9 +150,10 @@ module.exports = function(coursePath, rootCallback) {
 						if (optionHeadingTxt.indexOf("another department") > -1 ||
 							optionHeadingTxt.indexOf("open option") > -1) {
 							optionGroup.external = true;
-						} else if (!$(this).nextUntil('h5,h6').is('table')) {
-							return false;
 						}
+						// else if (!$(this).nextUntil('h5,h6').is('table')) {
+						// 	return false;
+						// }
 
 						optionGroup.options = $(this).nextUntil('h5,h6').find('td:nth-child(2)')
 							.map(function(i, el) {
@@ -185,7 +193,7 @@ module.exports = function(coursePath, rootCallback) {
 			unitCodes.forEach(function(unitCode,index) {
 				getUnit(unitCode, (unit) => {
 					course.options[unitCode] = unit;
-					course.options[unitCode].coursePath = coursePath;
+					course.options[unitCode].coursePath = [coursePath];
 					if (Object.keys(course.options).length === unitCodes.length) {
 						return finishedLoading(course);
 					}

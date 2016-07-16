@@ -199,6 +199,10 @@ $.get("/api/ugprogrammes", function( programmes ) {
 					console.log("Cached:", self.courseid, self.progData);
 					return self.isLoadingCourse;
 				}
+			},
+			isSecondCourse: function(coursePath) {
+				// console.log("CourseIsSecond?",coursePath,this.course.path[0],coursePath == this.course.path[0])
+				return coursePath == this.course.path[0]
 			}
 		}
 	});

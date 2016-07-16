@@ -67,7 +67,7 @@
 				<section class='yrblock'>
 
 					<app-class class='selected'
-						v-for="unit in classObjects | orderBy 'title' optionGroupOf(unit).required"
+						v-for="unit in classObjects | orderBy optionGroupOf(unit).required 'credits' 'title'"
 						v-on:click='unselect(unit)'
 						:unit="unit"
 					></app-class>
@@ -80,13 +80,13 @@
 
 					<article v-for='group in year.option_groups' v-if='!group.required'>
 						<h4>
-							<span class='subject-option'>{{course.meta[group.coursePath].subject}}</span>
+							<span class='subject-option' v-bind:class="{'combocourse': $root.isSecondCourse(group.coursePath)}">{{course.meta[group.coursePath].subject}}</span>
 							<span>{{group.rules}}</span>
 						</h4>
 						<div v-if='group.options.length > 0'>
 
 							<app-class class='selectable'
-								v-for="unit in group.options | unitsFromGrp course.options | orderBy 'title' isChosen(unit)"
+								v-for="unit in group.options | unitsFromGrp course.options | orderBy 'credits' 'title' isChosen(unit)"
 								v-on:click='select(unit,group)'
 								:unit="unit"
 							></app-class>
@@ -103,7 +103,13 @@
 			<article class='selection'
 				v-bind:class="{ 'unsatisfied': $parent.missingPrerequisites(unit), 'required': $parent.isRequired(unit), 'chosen': $parent.isChosen(unit) }">
 				<div>
-					<span class='subject-option'>{{$parent.course.meta[unit.coursePath].subject}}</span>
+					<div class='subject-options'>
+						<span class='subject-option'
+							v-for='path in unit.coursePath'
+							v-bind:class="{'combocourse': $root.isSecondCourse(path)}"
+						>{{$root.course.meta[path].subject}}</span>
+					</div>
+
 					<span>{{unit.title}}</span>
 				</div>
 				<div>

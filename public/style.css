@@ -52,7 +52,7 @@ body {
 	box-shadow: inset 0px 0px 20px rgba(0,0,0,0.1);
 	padding: 25px;
 	border-radius: 4px;
-	border-left: 6px solid green;
+	border-left: 6px solid #3D9970;
 	cursor: pointer;
 }
 .selection.required {
@@ -119,12 +119,12 @@ sub {
     display: none;
 }
 .unsatisfied {
-	border-left-color: darkred !important;
+	border-left-color: #FF4136 !important;
 }
 .unsatisfied.selected .prerequisites,
 .unsatisfied.selectable:hover .prerequisites {
     display: block;
-    color: red;
+    color: #FF4136;
 }
 .unsatisfied .prerequisites:before {
 	content: "Prerequisite courses missing:";
@@ -216,9 +216,36 @@ main.sec,
 }
 .subject-option { display: none; }
 .combined .subject-option {
-    display: block !important;
-    opacity: 0.5;
+    /*display: block !important;*/
+    opacity: 0.85;
     font-size: 0.7rem;
     text-transform: uppercase;
     font-weight: bold !important;
+}
+.combined .subject-option {
+	display: inline-block !important;
+    color: white;
+    background: #FF851B;
+    border-radius: 3px;
+    font-weight: bold;
+    padding: 2px 3px 1px 2px;
+}
+.combined .subject-option.combocourse {
+    background: #0074D9;
+    border-radius: 3px;
+}
+.combined selection .subject-option {
+    font-size: 10px !important;
+    /*display: inline-block !important;*/
+}
+.combined .selection .subject-option + .subject-option {
+    margin-left: 3px !important
+}
+.combined h4 > .subject-option + span {
+	margin-top: 3px;
+	display: block;
+}
+.combined .selection .subject-option {
+    font-size: 9px;
+    opacity: 0.7;
 }
