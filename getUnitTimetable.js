@@ -53,12 +53,12 @@ module.exports = function(unitCode, callback) {
 
 						var CLASS = {
 							unit:		unitCode,
-							name: 		CLASS_dump[1][0] ? CLASS_dump[1][0][0] : null,
-							term: 		CLASS_dump[0] ? CLASS_dump[0][0][1] : null,
+							name: 		CLASS_dump[1][0] ? CLASS_dump[1][0][0].toLowerCase() : null,
 							location: 	CLASS_dump[2] ? CLASS_dump[2][0][2] : null,
 							manager: 	CLASS_dump[2] ? CLASS_dump[2][0][0] : null,
 							staff: 		CLASS_dump[2] ? CLASS_dump[2][0][1].split(", ") : null,
 							time: {
+								term: 	CLASS_dump[0] ? CLASS_dump[0][0][1] : null,
 								day:    days[currentDay],
 								dayI:   currentDay,
 								start: 	start_time,
@@ -66,6 +66,11 @@ module.exports = function(unitCode, callback) {
 								end: 	end_time
 							}
 						}
+
+						if(CLASS.name.indexOf("tutorial") > -1) { CLASS.type = "tutorial"; } else
+						if(CLASS.name.indexOf("lecture") > -1) { CLASS.type = "lecture"; } else
+						if(CLASS.name.indexOf("workshop") > -1) { CLASS.type = "workshop"; } else
+						if(CLASS.name.indexOf("seminar") > -1) { CLASS.type = "seminar"; }
 
 						unit.classes.push(CLASS);
 					}

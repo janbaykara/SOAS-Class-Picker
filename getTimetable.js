@@ -20,9 +20,7 @@ module.exports = function(unitCodeCollection, rootCallback) {
 	function aggregate(unitTimetable) {
 		unitsLoaded++;
 		console.log("3. Loaded",unitTimetable.code)
-		unitTimetable.classes.forEach(function(CLASS) {
-			timetableData.push(CLASS);
-		});
+		timetableData = timetableData.concat(unitTimetable.classes);
 
 		if(unitsLoaded == unitCodes.length) {
 

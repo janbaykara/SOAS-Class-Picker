@@ -64,6 +64,7 @@
 					<div style='clear: both; display: table;'></div>
 					<slot></slot>
 				</header>
+
 				<section class='yrblock'>
 
 					<app-class class='selected'
@@ -73,6 +74,20 @@
 					></app-class>
 					<div class='wildcard'></div>
 
+				</section>
+
+				<section class='yrblock'>
+					<h3>Class schedule</h3>
+					<div v-for="n in 7">
+						<h5>{{n | dayFromI}}</h5>
+						<ul>
+							<li v-for="CLASS in classes | orderBy 'time.term' 'time.start' 1 | filterBy n in 'time.dayI' | filterBy 'lecture' in 'type'">
+								<b style='text-transform: capitalize !important;'>{{CLASS.name}}</b>
+								<p>{{CLASS.term}} - {{CLASS.time.start}}h to {{CLASS.time.end}}h</p>
+								<!-- <br>at {{CLASS.location}} -->
+							</li>
+						</ul>
+					</div>
 				</section>
 
 				<section class='yrblock selectable-options'>

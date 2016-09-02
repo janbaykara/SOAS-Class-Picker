@@ -1,6 +1,7 @@
 const cheerio = require('cheerio');
 const cachedRequest = require('./cachedRequest');
 const booleanParser = require('boolean-parser');
+const getUnitTimetable = require("./getUnitTimetable");
 
 module.exports = function(unitCode, callback) {
 	var unit = {
@@ -91,6 +92,10 @@ module.exports = function(unitCode, callback) {
 			unit.description = desc;
 		}
 
-		return callback(unit);
+		// Add timetable data
+		getUnitTimetable(unitCode, function(unitTimetable) {
+			unit.classes = unitTimetable.classes;
+			return callback(unit);
+		})
 	});
 };

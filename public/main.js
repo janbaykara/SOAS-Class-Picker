@@ -52,6 +52,13 @@ Vue.component('app-year', {
 				credits = credits + Number(this.classObjects[code].credits);
 			}
 			return Number(credits);
+		},
+		classes: function() {
+			var output = [];
+			this.classObjects.forEach(function(unit) {
+				output = output.concat(unit.classes);
+			})
+			return output;
 		}
 	},
 	methods: {
@@ -121,6 +128,10 @@ Vue.component('app-year', {
 				units.push(dictionary[code]);
 			})
 			return units;
+		},
+		dayFromI: function(number) {
+			var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+			return days[number];
 		}
 	}
 });
