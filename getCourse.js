@@ -4,9 +4,9 @@ const cachedRequest = require('./cachedRequest');
 //
 const getUnit = require("./getUnit");
 
-module.exports = function(coursePath, rootCallback) {
+module.exports = function(coursePathCollection, rootCallback) {
 	var $;
-	var coursePaths = coursePath.split(',');
+	var coursePaths = coursePathCollection.split(',');
 	console.log("---\n1. Initial request",coursePaths);
 
 	coursePaths.forEach(function(coursePath, index) {
@@ -122,7 +122,6 @@ module.exports = function(coursePath, rootCallback) {
 					var optionalDelimiters = $('h5,h6');
 
 					optionalDelimiters.each(function(i,elm) {
-						console.log($(elm).text());
 						var optionGroup = {};
 
 						var optionHeadingTxt = optionGroup.rules = $(this).text();

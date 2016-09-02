@@ -5,6 +5,8 @@ const app = express()
 const getUndergraduateProgrammes = require("./getUndergraduateProgrammes");
 const getCourse = require("./getCourse");
 const getUnit = require("./getUnit");
+const getTimetable = require("./getTimetable");
+const getUnitTimetable = require("./getUnitTimetable");
 
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
@@ -24,6 +26,18 @@ app.get('/api/course', (appReq, appRes) => {
 app.get('/api/unit/:code', (appReq, appRes) => {
 	getUnit(appReq.params.code, (unit) => {
 		appRes.json(unit);
+	});
+});
+
+app.get('/api/unittimetable/:code', (appReq, appRes) => {
+	getUnitTimetable(appReq.params.code, (unittimetable) => {
+		appRes.json(unittimetable);
+	});
+});
+
+app.get('/api/timetable', (appReq, appRes) => {
+	getTimetable(appReq.query.path, (timetable) => {
+		appRes.json(timetable);
 	});
 });
 
