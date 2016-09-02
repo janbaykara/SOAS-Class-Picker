@@ -216,6 +216,9 @@ main.sec,
     background: white;
     transition-delay: 2s;
 }
+.course-title {
+    margin-top: -10px;
+}
 .course-title span + span:before {
     content: " and ";
 }
@@ -253,4 +256,102 @@ main.sec,
 .combined .selection .subject-option {
     font-size: 9px;
     opacity: 0.7;
+}
+
+.view-selector {
+    text-align: center;
+    margin-top: -15px;
+    margin-bottom: 20px;
+}
+
+.module-view,
+.module-pick {
+    display: none;
+}
+
+.view .module-view {
+    display: block !important;
+}
+.module-view * {
+    box-sizing: border-box;
+}
+
+.pick .module-pick {
+    display: block !important;
+}
+
+.cal-class {
+    margin-bottom: 14px;
+    line-height: 1.1em;
+    width: 49.5%;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 25px;
+}
+
+.Term_1 {
+    float: left;
+}
+.Term_2 {
+    float: right;
+}
+.Full_Year {
+    width: 100%;
+    clear: both;
+}
+
+.cal-day-name {
+    text-align:;
+    color: black;
+    font-size: 20px;
+    margin: 0;
+    clear: both;
+    margin-bottom: -10px;
+}
+
+.cal-class-name {
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: capitalize;
+    margin: 0;
+    padding: 10px;
+}
+
+.cal-class-info {
+    font-weight: normal;
+}
+
+.cal-class-time {
+    display: inline-block;
+    background: #FAFAFA;
+    border-bottom: 1px solid #EEE;
+    font-weight: bold;
+    font-family: monospace;
+    padding: 6px 10px;
+    border-radius: 3px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+.cal-class-start:after {
+    text-transform: lowercase;
+    content:":00 - ";
+}
+.cal-class-end:after {
+    content:":00";
+}
+
+.cal-class-term {
+    text-align: center;
+    width: 100%;
+    display: block;
+    margin-top: 5px;
+    font-size: 0.8em;
+    margin-bottom: -10px;
+    border-top: 1px solid #EEE;
+    padding-top: 4px;
+    color: #777;
 }

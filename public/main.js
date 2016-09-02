@@ -119,6 +119,12 @@ Vue.component('app-year', {
 				if(group.options.indexOf(unit.code) > -1) theGroup = group;
 			})
 			return theGroup;
+		},
+		dayHasClasses: function(dayI) {
+			console.log(dayI);
+			return _.any(this.classes, function(CLASS) {
+				return CLASS.time.dayI == dayI;
+			})
 		}
 	},
 	filters: {

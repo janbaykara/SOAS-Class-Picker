@@ -39,6 +39,12 @@
 							<template v-if='!isCombinedCourse'>{{course.meta[course.path[0]].title}}</template>
 						</h1>
 					</center>
+
+					<div class='view-selector'>
+						<label><input type="radio" v-model="viewMode" value="pick" checked> Unit picker</label>
+						<label><input type="radio" v-model="viewMode" value="view"> Class schedule viewer</label>
+					</div>
+
 					<app-year
 						v-ref:allclasscodes
 						v-for='year in course.structure'
@@ -47,6 +53,7 @@
 						:course='course'
 						:allclasscodes='allclasscodes'
 						:courseid='courseid'
+						v-bind:class="{ 'pick': viewMode == 'pick', 'view': viewMode == 'view' }"
 					></app-year>
 					<div style='clear: both'></div>
 				</div>
@@ -65,7 +72,7 @@
 					<slot></slot>
 				</header>
 
-				<section class='yrblock'>
+				<section class='yrblock module-pick module-choices'>
 
 					<app-class class='selected'
 						v-for="unit in classObjects | orderBy optionGroupOf(unit).required 'credits' 'title'"
@@ -76,21 +83,26 @@
 
 				</section>
 
-				<section class='yrblock'>
-					<h3>Class schedule</h3>
-					<div v-for="n in 7">
-						<h5>{{n | dayFromI}}</h5>
-						<ul>
-							<li v-for="CLASS in classes | orderBy 'time.term' 'time.start' 1 | filterBy n in 'time.dayI' | filterBy 'lecture' in 'type'">
-								<b style='text-transform: capitalize !important;'>{{CLASS.name}}</b>
-								<p>{{CLASS.term}} - {{CLASS.time.start}}h to {{CLASS.time.end}}h</p>
-								<!-- <br>at {{CLASS.location}} -->
+				<section class='yrblock module-view class-schedule'>
+					<div v-for="n in 7" class='cal-day'>
+						{{dayHasClasses(n)}}
+						<h5 class='cal-day-name'>{{n | dayFromI}}</h5>
+						<ul class='cal-day-list'>
+							<li v-for="CLASS in classes | orderBy 'time.start' | filterBy n in 'time.dayI' | filterBy 'lecture' in 'type'" class='cal-class {{CLASS.time.termslug}}'>
+								<h6 class='cal-class-name'>{{CLASS.name}}</b>
+								<div class='cal-class-info'>
+									<span class='cal-class-term'>{{CLASS.time.term}}</span>
+									<span class='cal-class-time'>
+										<span class='cal-class-start'>{{CLASS.time.start}}</span>
+										<span class='cal-class-end'>{{CLASS.time.end}}</span>
+									</span>
+								</div>
 							</li>
 						</ul>
 					</div>
 				</section>
 
-				<section class='yrblock selectable-options'>
+				<section class='yrblock module-pick selectable-options'>
 					<h3>Options</h3>
 
 					<article v-for='group in year.option_groups' v-if='!group.required'>

@@ -58,7 +58,8 @@ module.exports = function(unitCode, callback) {
 							manager: 	CLASS_dump[2] ? CLASS_dump[2][0][0] : null,
 							staff: 		CLASS_dump[2] ? CLASS_dump[2][0][1].split(", ") : null,
 							time: {
-								term: 	CLASS_dump[0] ? CLASS_dump[0][0][1] : null,
+								termslug:CLASS_dump[0] ? CLASS_dump[0][0][1] : null,
+								term:	CLASS_dump[0] ? CLASS_dump[0][0][1].replace("_", " ") : null,
 								day:    days[currentDay],
 								dayI:   currentDay,
 								start: 	start_time,
