@@ -69,9 +69,9 @@ module.exports = function(unitCode, callback) {
 						}
 
 						if(CLASS.name.indexOf("tutorial") > -1) { CLASS.type = "tutorial"; } else
-						if(CLASS.name.indexOf("lecture") > -1) { CLASS.type = "lecture"; } else
-						if(CLASS.name.indexOf("workshop") > -1) { CLASS.type = "workshop"; } else
-						if(CLASS.name.indexOf("seminar") > -1) { CLASS.type = "seminar"; }
+						if(CLASS.name.indexOf("lecture") > -1) { CLASS.type = "class"; } else
+						if(CLASS.name.indexOf("workshop") > -1) { CLASS.type = "class"; } else
+						if(CLASS.name.indexOf("seminar") > -1) { CLASS.type = "class"; }
 
 						unit.classes.push(CLASS);
 					}
