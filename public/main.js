@@ -143,7 +143,7 @@ Vue.component('app-year', {
 	}
 });
 
-$.get("/api/ugprogrammes", function( programmes ) {
+$.get("api/ugprogrammes", function( programmes ) {
 
 	var app = new Vue({
 		el: '#app',
@@ -207,7 +207,7 @@ $.get("/api/ugprogrammes", function( programmes ) {
 				if(self.progData[self.courseid] == null) {
 					console.log("Loading:", self.courseid)
 
-					$.get("/api/course?path="+self.courseid, function( course ) {
+					$.get("api/course?path="+self.courseid, function( course ) {
 						// self.progData[self.courseid] = course;
 						Vue.set(self.progData, self.courseid, course);
 						console.log("Finished:", self.courseid, self.progData[self.courseid]);
