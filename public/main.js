@@ -121,10 +121,11 @@ Vue.component('app-year', {
 			return theGroup;
 		},
 		dayHasClasses: function(dayI) {
-			console.log(dayI);
-			return _.any(this.classes, function(CLASS) {
-				return CLASS.time.dayI == dayI;
+			var show = false;
+			this.classes.forEach(function(CLASS) {
+			 	if(CLASS.time.dayI == dayI) show = true;
 			})
+			return show;
 		}
 	},
 	filters: {

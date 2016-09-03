@@ -84,8 +84,7 @@
 				</section>
 
 				<section class='yrblock module-view class-schedule'>
-					<div v-for="n in 7" class='cal-day'>
-						{{dayHasClasses(n)}}
+					<div v-for="n in 7" class='cal-day' v-show='dayHasClasses(n)'>
 						<h5 class='cal-day-name'>{{n | dayFromI}}</h5>
 						<ul class='cal-day-list'>
 							<li v-for="CLASS in classes | orderBy 'time.start' | filterBy n in 'time.dayI' | filterBy 'lecture' in 'type'" class='cal-class {{CLASS.time.termslug}}'>
