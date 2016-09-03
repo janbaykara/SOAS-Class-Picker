@@ -356,3 +356,11 @@ main.sec,
     padding-top: 4px;
     color: #777;
 }
+
+.app-header img {
+    height: 30px;
+    vertical-align: text-top;
+}
+.app-header * {
+    color: #808084;
+}

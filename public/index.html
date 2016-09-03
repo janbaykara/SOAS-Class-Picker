@@ -10,7 +10,7 @@
 		<div>
 			<header class='app-header sec'><h1>
 				<!-- <img width=146 height=57 src='http://www.soas.ac.uk/static/assets/soas-logo-100years-orig.png' alt='SOAS' /> -->
-				<center>Class Options</center>
+				<center><img src='http://www.sconul.ac.uk/sites/default/files/images/new-logo-min-size-full-colour.png' /> Class Options</center>
 			</h1></header>
 
 			<main class='sec'>
@@ -66,7 +66,11 @@
 		<template id='app-year'>
 			<div class='year'>
 				<header class='year-header yrblock'>
-					<span style='float: right;'>Credits: {{currentCredits}}/{{requiredCredits}}</span>
+					<span class='module-pick' style='float: right; margin-top: 5px;'>Credits: {{currentCredits}}/{{requiredCredits}}</span>
+					<div class='module-view view-selector' style='float: right; margin-top: 3px; margin-bottom: 0px; font-size: 14px;'>
+						<label><input type="radio" v-model="classType" value="lecture" checked> Lectures</label>
+						<label><input type="radio" v-model="classType" value=""> All (tutorials etc.)</label>
+					</div>
 					<h2 style='float: left;'>Year {{yearnumber+1}}</h2>
 					<div style='clear: both; display: table;'></div>
 					<slot></slot>
@@ -87,7 +91,7 @@
 					<div v-for="n in 7" class='cal-day' v-show='dayHasClasses(n)'>
 						<h5 class='cal-day-name'>{{n | dayFromI}}</h5>
 						<ul class='cal-day-list'>
-							<li v-for="CLASS in classes | orderBy 'time.start' | filterBy n in 'time.dayI' | filterBy 'lecture' in 'type'" class='cal-class {{CLASS.time.termslug}}'>
+							<li v-for="CLASS in classes | orderBy 'time.start' | filterBy n in 'time.dayI' | filterBy classType in 'type'" class='cal-class {{CLASS.time.termslug}}'>
 								<h6 class='cal-class-name'>{{CLASS.name}}</b>
 								<div class='cal-class-info'>
 									<span class='cal-class-term'>{{CLASS.time.term}}</span>
