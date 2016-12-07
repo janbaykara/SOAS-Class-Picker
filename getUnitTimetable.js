@@ -49,7 +49,7 @@ module.exports = function(unitCode, callback) {
 						var hours = parseInt( $(cell).attr('colspan') || 1 );
 						var start_time = currentTime;
 						var end_time = currentTime + hours;
-						currentTime = end_time + 1;
+						currentTime = end_time;
 
 						var CLASS = {
 							unit:		unitCode,
