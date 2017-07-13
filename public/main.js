@@ -1,4 +1,5 @@
-var STORAGE_KEY = 'soas-classess';
+Vue.config.devtools = true
+var STORAGE_KEY = 'soas-classess_';
 
 Vue.component('app-class', {
 	name: 'app-class',
@@ -158,6 +159,10 @@ $.get("api/ugprogrammes", function( programmes ) {
 			programme: {
 				deep: true,
 				handler: function (programme) {
+					if(!programme[0].combination)
+						delete programme[1];
+
+					console.log("Storing programme",programme)
 					localStorage.setItem(STORAGE_KEY+"selectedProgramme", JSON.stringify(programme));
 				}
 			}
@@ -196,10 +201,6 @@ $.get("api/ugprogrammes", function( programmes ) {
 			},
 			loadCourse: function() {
 				var self = this;
-
-				if(this.programme[0].combination) {
-					delete self.programme[1]
-				}
 
 				// console.log("----\nhttps://www.soas.ac.uk"+p.path);
 				console.log("---\nFetching: http://localhost:3000/api/course?path="+self.courseid);
