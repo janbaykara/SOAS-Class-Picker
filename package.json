@@ -1,10 +1,16 @@
 {
-  "name": "class",
-  "version": "1.0.0",
+  "name": "soas",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
-  "author": "",
+  "author": "Jan Baykara",
   "license": "ISC",
+  "engines" : {
+    "npm" : "~6"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "boolean-parser": "0.0.0",
     "cached-request": "^1.0.0",
