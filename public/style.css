@@ -71,14 +71,16 @@ ul {
 
 .selectable {
 	font-size: 0.8em !important;
-	padding: 13px 11px !important;
+	padding-top: 13px !important;
+	padding-bottom: 13px !important;
 	border-left-color: #CCC !important;
-	width: 90%;
-	margin-left: 10%;
+	/*width: 90%;
+	margin-left: 10%;*/
 }
 
 .selectable.chosen {
     cursor: not-allowed;
+		border-left-color: #3D9970 !important;
     opacity: 0.2;
 }
 
@@ -135,10 +137,6 @@ sub {
 	display: inline-block;
 }
 
-.selection {
-    position: relative;
-}
-
 .description {
     font-size: 12px;
     width: 100%;
@@ -162,7 +160,7 @@ sub {
 	list-style-type: circle;
 }
 .selection:hover .description {
-    transition-delay: 2s;
+    transition-delay: 0.5s;
     max-height: 350px;
     z-index: 999;
     overflow-y: auto;
@@ -202,7 +200,7 @@ main.sec,
 }
 .selection:hover ~ .wildcard {
     opacity: 1;
-    transition-delay: 2s;
+    transition-delay: 0.5s;
 }
 .selection {
     position: relative;
@@ -214,7 +212,7 @@ main.sec,
     opacity: 1;
     z-index: 999 !important;
     background: white;
-    transition-delay: 2s;
+    transition-delay: 0.5s;
 }
 .course-title {
     margin-top: -10px;
