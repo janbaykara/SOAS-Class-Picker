@@ -6,7 +6,7 @@
   "author": "Jan Baykara",
   "license": "ISC",
   "engines" : {
-    "npm" : "~6"
+    "npm" : "^6"
   },
   "scripts": {
     "start": "node index.js"
