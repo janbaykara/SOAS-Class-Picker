@@ -36,7 +36,7 @@
 					<center>
 						<h1 class='course-title'>
 							<template v-if='isCombinedCourse'>{{course.meta[course.path[0]].classification}} <span v-for='subj in course.meta'><a href='{{subj.url}}'>{{subj.subject}}</a></span></template>
-							<template v-if='!isCombinedCourse'>{{course.meta[course.path[0]].title}}</template>
+							<a v-if='!isCombinedCourse' href='{{course.meta[course.path[0]].url}}'>{{course.meta[course.path[0]].title}}</a>
 						</h1>
 					</center>
 
