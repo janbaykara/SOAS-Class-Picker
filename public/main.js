@@ -152,7 +152,8 @@ $.get("api/ugprogrammes", function( programmes ) {
 			programmes: programmes,
 			progData: {},
 			programme: (function () {
-				return JSON.parse(localStorage.getItem(STORAGE_KEY+"selectedProgramme")) || [_.find(programmes, function(degree) { return degree.path == "politics/programmes/ba-politics-and-international-relations/" })]
+				return JSON.parse(localStorage.getItem(STORAGE_KEY+"selectedProgramme")) || [_.find(programmes, function(degree) { return degree.path == "politics/programmes/bapoliticsand/" }),
+				_.find(programmes, function(degree) { return degree.path == "politics/programmes/baintreland/" })]
 			})()
 		},
 		watch: {
